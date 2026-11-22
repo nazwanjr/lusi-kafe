@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LUCEE KAFE — 5-Star Artisanal Roastery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="style.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar sticky-top nav-lux">
+ <div class="container-fluid gap-2">
+  <div class="brand"><span class="serif">LUCEE KAFE</span><small>5-Star Artisanal Roastery</small></div>
+  <div class="d-flex flex-wrap gap-2 ms-auto align-items-center">
+   <span id="roleBadge" class="badge rounded-pill role-pill">Mode Pelanggan</span>
+   <button id="btnKitchen" class="btn btn-sm btn-outline-gold staff-only d-none"><i class="bi bi-fire"></i> Dapur <span id="kCount" class="badge bg-danger">0</span></button>
+   <button id="btnShift" class="btn btn-sm btn-outline-gold staff-only d-none"><i class="bi bi-cash-stack"></i> <span id="shiftLbl">Buka Shift</span></button>
+   <button id="btnAdmin" class="btn btn-sm btn-outline-gold staff-only d-none"><i class="bi bi-speedometer2"></i> Dashboard</button>
+   <button id="btnRole" class="btn btn-sm btn-gold"><i class="bi bi-person-lock"></i> <span id="roleLbl">Masuk Kasir</span></button>
+   <button id="btnTheme" class="btn btn-sm btn-outline-gold" aria-label="Ganti tema"><i class="bi bi-sun"></i></button>
+  </div>
+ </div>
+</nav>
+
+<main class="container-fluid py-4"><div class="row g-4">
+ <section class="col-lg-8">
+  <h1 class="serif hero">Seduhan terbaik, dipilih sendiri.</h1>
+  <p class="text-muted">Pilih menu, atur suhu dan gula, lalu kirim pesanan ke meja Anda.</p>
+  <div class="input-group mb-3"><span class="input-group-text"><i class="bi bi-search"></i></span><input id="search" class="form-control" placeholder="Cari menu…"></div>
+  <div id="cats" class="d-flex flex-wrap gap-2 mb-3"></div>
+  <div id="grid" class="row g-3"></div>
+ </section>
+
+ <aside class="col-lg-4"><div class="card cart sticky-lg-top"><div class="card-body">
+  <h2 class="serif h4 mb-3"><i class="bi bi-bag"></i> Pesanan</h2>
+  <div class="staff-only d-none btn-group w-100 mb-2" role="group">
+   <input type="radio" class="btn-check" name="otype" id="o1" value="Dine-In" checked><label class="btn btn-outline-gold btn-sm" for="o1">Dine-In</label>
+   <input type="radio" class="btn-check" name="otype" id="o2" value="Takeaway"><label class="btn btn-outline-gold btn-sm" for="o2">Takeaway</label>
+  </div>
+  <select id="table" class="form-select mb-2"></select>
+  <div class="staff-only d-none">
+   <input id="phone" class="form-control mb-1" inputmode="tel" placeholder="No. HP member (opsional)">
+   <small id="memInfo" class="text-muted d-block mb-2">Member: 1 poin tiap Rp 10.000, 1 poin = potongan Rp 1.000.</small>
+   <div class="input-group mb-2"><input id="promo" class="form-control" placeholder="Kode promo"><button id="btnPromo" class="btn btn-outline-gold">Pakai</button></div>
+   <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="usePts"><label class="form-check-label" for="usePts">Tukar poin jadi diskon</label></div>
+   <small class="text-muted d-block mb-1">Centang item untuk Split Bill, lalu bayar yang terpilih saja.</small>
+  </div>
+  <div id="cartList" class="my-2"></div>
+  <div id="totals"></div>
+  <button id="btnPay" class="btn btn-gold w-100 mt-3 py-2 fw-semibold"></button>
+ </div></div></aside>
+</div></main>
+
+<div class="modal fade" id="itemModal" tabindex="-1" data-bs-focus="false"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+ <img id="imImg" class="modal-img" alt="">
+ <div class="modal-body">
+  <h3 id="imName" class="serif"></h3><p id="imPrice" class="gold fw-semibold"></p>
+  <div id="imOpts">
+   <label class="form-label">Suhu</label><div class="btn-group w-100 mb-3">
+    <input type="radio" class="btn-check" name="temp" id="t1" value="Hot" checked><label class="btn btn-outline-gold" for="t1">Hot</label>
+    <input type="radio" class="btn-check" name="temp" id="t2" value="Iced"><label class="btn btn-outline-gold" for="t2">Iced</label></div>
+   <label class="form-label">Level gula</label><div class="btn-group w-100 mb-3">
+    <input type="radio" class="btn-check" name="sugar" id="s1" value="Normal" checked><label class="btn btn-outline-gold" for="s1">Normal</label>
+    <input type="radio" class="btn-check" name="sugar" id="s2" value="Less Sugar"><label class="btn btn-outline-gold" for="s2">Less Sugar</label>
+    <input type="radio" class="btn-check" name="sugar" id="s3" value="No Sugar"><label class="btn btn-outline-gold" for="s3">No Sugar</label></div>
+  </div>
+  <textarea id="imNote" class="form-control mb-3" rows="2" placeholder="Catatan khusus (mis. extra shot)"></textarea>
+  <div class="d-flex align-items-center justify-content-between"><div class="qty"><button id="imMinus">−</button><b id="imQty">1</b><button id="imPlus">+</button></div>
+  <button id="imAdd" class="btn btn-gold px-4">Tambah ke pesanan</button></div>
+ </div></div></div></div>
+
+<div class="modal fade" id="payModal" tabindex="-1" data-bs-focus="false"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-body">
+ <h3 class="serif">Pembayaran</h3><div id="payTotal" class="display-6 gold mb-3"></div>
+ <div class="btn-group w-100 mb-3">
+  <input type="radio" class="btn-check" name="method" id="m1" value="Tunai" checked><label class="btn btn-outline-gold" for="m1"><i class="bi bi-cash"></i> Tunai</label>
+  <input type="radio" class="btn-check" name="method" id="m2" value="QRIS"><label class="btn btn-outline-gold" for="m2"><i class="bi bi-qr-code"></i> QRIS</label></div>
+ <div id="cashBox"><input id="cashIn" type="number" class="form-control mb-2" placeholder="Uang diterima"><div id="quick" class="d-flex flex-wrap gap-2 mb-2"></div><div id="chg" class="fw-semibold"></div></div>
+ <button id="payConfirm" class="btn btn-gold w-100 mt-3 py-2">Konfirmasi pembayaran</button>
+</div></div></div></div>
+
+<div class="modal fade" id="kitchenModal" tabindex="-1"><div class="modal-dialog modal-xl modal-dialog-scrollable"><div class="modal-content">
+ <div class="modal-header"><h3 class="serif modal-title">Antrean Dapur</h3><button class="btn-close" data-bs-dismiss="modal"></button></div>
+ <div class="modal-body"><div id="kList" class="row g-3"></div></div></div></div></div>
+
+<div class="modal fade" id="adminModal" tabindex="-1" data-bs-focus="false"><div class="modal-dialog modal-fullscreen"><div class="modal-content">
+ <div class="modal-header"><h3 class="serif modal-title">Dashboard Admin</h3><button class="btn-close" data-bs-dismiss="modal"></button></div>
+ <div class="modal-body">
+  <div id="stats" class="row g-3 mb-4"></div>
+  <div class="card mb-4"><div class="card-body"><h4 class="serif h5">Omset 7 hari terakhir</h4><div style="height:260px"><canvas id="chart"></canvas></div></div></div>
+  <ul class="nav nav-pills mb-3"><li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tabMenu">Kelola Menu</button></li>
+   <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabHist">Riwayat Transaksi</button></li>
+   <li class="ms-auto"><button id="btnCsv" class="btn btn-outline-gold btn-sm"><i class="bi bi-file-earmark-spreadsheet"></i> Export Excel (CSV)</button></li></ul>
+  <div class="tab-content">
+   <div class="tab-pane fade show active" id="tabMenu"><button id="btnAddMenu" class="btn btn-gold btn-sm mb-2"><i class="bi bi-plus-lg"></i> Tambah menu</button><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Menu</th><th>Kategori</th><th>Harga</th><th>Stok</th><th></th></tr></thead><tbody id="tMenu"></tbody></table></div></div>
+   <div class="tab-pane fade" id="tabHist"><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Invoice</th><th>Waktu</th><th>Tipe</th><th>Bayar</th><th>Total</th><th></th></tr></thead><tbody id="tHist"></tbody></table></div></div>
+  </div>
+ </div></div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
